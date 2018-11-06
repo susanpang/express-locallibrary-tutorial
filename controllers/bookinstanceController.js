@@ -111,7 +111,7 @@ exports.bookinstance_delete_get = function(req, res, next) {
             res.redirect('/catalog/bookinstances');
         }
         // Successful, so render.
-        res.render('bookinstance_delete', { title: 'Delete Book Instance', bookinstance: bookinstance} );
+        res.render('bookinstance_delete', { title: 'Delete BookInstance', bookinstance: bookinstance} );
     });
 
 };
@@ -119,20 +119,13 @@ exports.bookinstance_delete_get = function(req, res, next) {
 // Handle BookInstance delete on POST.
 exports.bookinstance_delete_post = function(req, res, next) {
 
-    BookInstance.findById(req.body.bookinstanceid)
-    .populate('book')
-    .exec(function(err, results) {
+    // Assume valid BookInstance id in field.
+    BookInstance.findByIdAndRemove(req.body.id, function deleteBookInstance(err) {
         if (err) { return next(err); }
-        // Success
-
-        // Delete object and redirect to the list of book instances.
-        BookInstance.findByIdAndRemove(req.body.bookinstanceid, function deleteBookInstance(err) {
-            if (err) { return next(err); }
-            // Success - go to book instance list
-            res.redirect('/catalog/bookinstances');
-        });
-        
+        // Success - go to book instance list
+        res.redirect('/catalog/bookinstances');
     });
+        
 };
 
 // Display BookInstance update form on GET.
@@ -143,7 +136,7 @@ exports.bookinstance_update_get = function(req, res, next) {
             BookInstance.findById(req.params.id).populate('book').exec(callback);
         },
         books: function(callback) {
-            Book.find({},'title').exec(callback);
+            Book.find(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
@@ -193,7 +186,7 @@ exports.bookinstance_update_post = [
                 .exec(function (err, books) {
                     if (err) { return next(err); }
                     // Successful, so render.
-                    res.render('bookinstance_form', { title: 'Update BookInstance', book_list : books, selected_book : bookinstance.book._id , errors: errors.array(), bookinstance: bookinstance });
+                    res.render('bookinstance_form', { title: 'Update BookInstance', book_list : books, errors: errors.array(), bookinstance: bookinstance });
             });
             return;
         }

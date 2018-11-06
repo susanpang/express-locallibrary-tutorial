@@ -154,20 +154,15 @@ exports.genre_delete_post = function(req, res, next) {
 // Display Genre update form on GET.
 exports.genre_update_get = function(req, res, next) {
 
-    // Get book, authors and genres for form.
-    async.parallel({
-        genre: function(callback) {
-            Genre.findById(req.params.id).exec(callback);
-        },
-    }, function(err, results) {
+    Genre.findById(req.params.id, function(err, genre) {
         if (err) { return next(err); }
-        if (results.genre==null) { // No results.
+        if (genre==null) { // No results.
             var err = new Error('Genre not found');
             err.status = 404;
             return next(err);
         }
         // Success.
-        res.render('genre_form', { title: 'Update Genre', genre: results.genre });
+        res.render('genre_form', { title: 'Update Genre', genre: genre });
     });
 
 };
@@ -191,11 +186,12 @@ exports.genre_update_post = [
         var genre = new Genre(
           { name: req.body.name,
             _id:req.params.id //This is required, or a new ID will be assigned!
-           });
+          }
+        );
 
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/error messages.
-            res.render('genre_form', { title: 'Update Genre', genre: results.genre, errors: errors.array() });
+            res.render('genre_form', { title: 'Update Genre', genre: genre, errors: errors.array() });
             
             return;
         }
