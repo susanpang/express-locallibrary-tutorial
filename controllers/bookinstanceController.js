@@ -107,7 +107,7 @@ exports.bookinstance_delete_get = function(req, res, next) {
     .populate('book')
     .exec(function(err, bookinstance) {
         if (err) { return next(err); }
-        if (results.bookinstance==null) { // No results.
+        if (bookinstance==null) { // No results.
             res.redirect('/catalog/bookinstances');
         }
         // Successful, so render.
